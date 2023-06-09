@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  role: one
+  start_time_hour: 1
+  start_time_minute: 1
+  initial_interval_hour: 1
+  initial_interval_minute: 1
+  final_interval_hour: 1
+  final_interval_minute: 1
+  final_time_hour: 1
+  final_time_minute: 1
+
+two:
+  role: two
+  start_time_hour: 1
+  start_time_minute: 1
+  initial_interval_hour: 1
+  initial_interval_minute: 1
+  final_interval_hour: 1
+  final_interval_minute: 1
+  final_time_hour: 1
+  final_time_minute: 1
