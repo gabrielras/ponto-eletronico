@@ -1,1 +1,0 @@
-# SmartDot_PontoEletronico

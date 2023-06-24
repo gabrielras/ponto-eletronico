@@ -4,12 +4,13 @@ class User < ApplicationRecord
   has_secure_password
 
   has_one :role, dependent: :destroy
-  has_one :schedule, through: :role
+  has_many :schedules, through: :role
 
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :name, presence: true
 
   def generate_jwt
-    encode({ user: self.email, exp: 60.minutes.from_now.to_i })
+    encode({ email: self.email, exp: 1.year.from_now.to_i })
   end
 
   private

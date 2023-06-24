@@ -4,7 +4,6 @@ class CreateRoles < ActiveRecord::Migration[7.0]
       t.references :user, null: false, foreign_key: true
       t.references :company, null: false, foreign_key: true
       t.string :role_type
-      t.boolean :status, default: false, null: false
 
       t.timestamps
     end

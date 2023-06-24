@@ -4,15 +4,12 @@ class SessionsController < ApplicationController
 
   def create
     user = User.find_by_email(params[:email])
-    if user && user.valid_password?(params[:password]) 
-      s = user.generate_jwt
-      if !user.active_for_authentication?
-        render json: { errors: [ { 'error' => 'Usuário não ativado' } ] }, status: :unauthorized
-      else
-        render json: { Autorização: s, usuário: user.email, status: :ok }
-      end
+    if user && user.authenticate(params[:password]) 
+      render json: { token: user.generate_jwt }, status: :ok 
     else
       render json: { errors: [ { 'error' => 'E-mail ou senha inválidos' } ] }, status: :unauthorized
     end
-  end  
+  rescue
+    render json: { errors: [ { 'error' => 'E-mail ou senha inválidos' } ] }, status: :unauthorized
+  end
 end

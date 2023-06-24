@@ -1,17 +1,15 @@
 # frozen_string_literal: true
 
-class Collaborator::PointPresencesController < UsersController
+class Collaborator::PointPresencesController < Collaborator::CollaboratorController
   def index
-    @date = params[:data].present? ? Time.zone.now : Date.parse(params[:data])
-    @point_presences = PointPresence.where(role_id: current_user.role_id)
-                                    .where(:created_at => @date.beginning_of_day..@date.end_of_day)
-                                    .all
-    render json: @point_presences
+    @date = params[:data].present? ? Date.parse(params[:data]) : Date.parse(Time.zone.now.to_date.to_s)
+    result = ::Collaborator::PointPresences::Search.result(date: @date, user: current_user)
+    render json: result.data
   end
 
   def create
-    result = ::Manager::PointPresences::Create.result(
-      attributes: point_presence_params, current_user: current_user
+    result = ::Collaborator::PointPresences::Create.result(
+      attributes: point_presence_params, user: current_user
     )
 
     if result.success?
@@ -24,8 +22,8 @@ class Collaborator::PointPresencesController < UsersController
   private
 
   def point_presence_params
-    params.require(:point_presence).permit(
-      :schedule_time, :date, :geocoding, :authentication
+    params.permit(
+      :schedule_time, geocoding: {}
     ).to_h
   end
 end

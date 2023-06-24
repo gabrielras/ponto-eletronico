@@ -1,6 +1,11 @@
 class Schedule < ApplicationRecord
   belongs_to :role
 
+  has_one :user, through: :role
+
+  validates :closing_date, presence: true
+  validates :start_date, presence: true
+
   validates :start_time_hour, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 24 }
   validates :start_time_minute, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 59 }
   validates :initial_interval_hour, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 24 }
