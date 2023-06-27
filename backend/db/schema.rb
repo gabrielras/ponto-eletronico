@@ -24,7 +24,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_125818) do
     t.bigint "role_id", null: false
     t.string "state"
     t.string "schedule_time"
-    t.json "geocoding"
+    t.string "latitude"
+    t.string "longitude"
+    t.string "local_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["role_id"], name: "index_point_presences_on_role_id"
@@ -68,7 +70,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_125818) do
     t.string "name"
     t.string "email"
     t.string "password_digest"
-    t.jsonb "authentication"
+    t.jsonb "authentication_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

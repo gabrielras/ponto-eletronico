@@ -7,6 +7,8 @@ module Users
 
     def call
       user.update!(attributes)
+    rescue => exception
+      fail!(error: exception.message)
     end
   end
 end

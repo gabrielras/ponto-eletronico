@@ -8,6 +8,8 @@ Rails.application.routes.draw do
     resources :dashboards, only: [:index]
     resources :point_presences, only: [:index]
     resources :users, only: [:index, :create, :update, :destroy]
+
+    get '/info', to: 'user#index'
   end
 
   namespace :collaborator do
@@ -15,6 +17,8 @@ Rails.application.routes.draw do
     resources :point_presences, only: [:index, :create]
     resources :users, only: [:index]
   end
+
+  resources :users, only: [:update]
 
   root 'sessions#create'
 end

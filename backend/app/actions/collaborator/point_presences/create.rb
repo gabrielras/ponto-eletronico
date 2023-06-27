@@ -29,6 +29,20 @@ module Collaborator
         if PointPresence.where(:created_at => Time.zone.now.beginning_of_day..Time.zone.now.end_of_day).where(role_id: user.role.id, state: state).present?
           fail!(error: 'Já foi marcado o ponto.')
         end
+
+        last_point_presence = PointPresence.where(:created_at => Time.zone.now.beginning_of_day..Time.zone.now.end_of_day).where(role_id: user.role.id).last
+        return if last_point_presence.blank?
+
+        case last_point_presence.schedule_time
+        when 'start_time'
+          attributes["schedule_time"] == 'initial_interval' || attributes["final_time"]
+        when 'initial_interval'
+          attributes["schedule_time"] == 'final_interval'
+        when 'final_interval'
+          attributes["schedule_time"] == 'final_time'
+        when 'final_time'
+          fail!(error: 'Não é mais possível fazer essa ação.')
+        end
       end
 
       def state

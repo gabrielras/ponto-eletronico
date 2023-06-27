@@ -4,12 +4,12 @@ one:
   role: one
   schedule_time: MyString
   date: 2023-06-03 09:58:18
-  geocoding: 
+  latitude: 
   authentication: 
 
 two:
   role: two
   schedule_time: MyString
   date: 2023-06-03 09:58:18
-  geocoding: 
+  latitude: 
   authentication: 

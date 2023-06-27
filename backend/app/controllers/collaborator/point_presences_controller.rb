@@ -23,7 +23,7 @@ class Collaborator::PointPresencesController < Collaborator::CollaboratorControl
 
   def point_presence_params
     params.permit(
-      :schedule_time, geocoding: {}
+      :schedule_time, :longitude, :latitude, :local_name
     ).to_h
   end
 end

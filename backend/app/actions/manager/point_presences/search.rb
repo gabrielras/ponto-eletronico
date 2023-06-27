@@ -3,6 +3,7 @@
 module Manager
   module PointPresences
     class Search < Actor
+      input :name, type: String, default: nil
       input :date, type: Date
       input :user, type: User
 
@@ -13,32 +14,41 @@ module Manager
         return if schedules.blank?
 
         schedules.each do |schedule|
+          next if total_time(schedule).blank?
           self.data << {
             user_name: schedule.role.user.name,
-            user_email: schedule.role.user.email,
+            tempo_total: total_time(schedule),
             tempo_inicial: {
-              padrao: time(schedule, 'start_time'),
-              real: point_presence(schedule, 'start_time')&.created_at&.strftime('%H:%M'),
-              situacao: CurrentState.state(point_presence(schedule, 'start_time'), time(schedule, 'start_time')),
-              geolocalizacao: point_presence(schedule, 'start_time')&.geocoding
+              padrao: time(schedule, 'start_time') || "",
+              real: point_presence(schedule, 'start_time')&.created_at&.strftime('%H:%M') || "",
+              situacao: CurrentState.state(point_presence(schedule, 'start_time'), time(schedule, 'start_time')) || "",
+              longitude: point_presence(schedule, 'start_time')&.longitude || "",
+              latitude: point_presence(schedule, 'start_time')&.latitude || "",
+              local_name: point_presence(schedule, 'start_time')&.local_name || ""
             },
             intervalo_inicial: {
-              padrao: time(schedule, 'initial_interval'),
-              real: point_presence(schedule, 'initial_interval')&.created_at&.strftime('%H:%M'),
-              situacao: CurrentState.state(point_presence(schedule, 'initial_interval'), time(schedule, 'initial_interval')),
-              geolocalizacao: point_presence(schedule, 'initial_interval')&.geocoding
+              padrao: time(schedule, 'initial_interval') || "",
+              real: point_presence(schedule, 'initial_interval')&.created_at&.strftime('%H:%M') || "",
+              situacao: CurrentState.state(point_presence(schedule, 'initial_interval'), time(schedule, 'initial_interval')) || "",
+              longitude: point_presence(schedule, 'initial_interval')&.longitude || "",
+              latitude: point_presence(schedule, 'initial_interval')&.latitude || "",
+              local_name: point_presence(schedule, 'initial_interval')&.local_name || ""
             },
             intervalo_final: {
-              padrao: time(schedule, 'final_interval'),
-              real: point_presence(schedule, 'final_interval')&.created_at&.strftime('%H:%M'),
-              situacao: CurrentState.state(point_presence(schedule, 'final_interval'), time(schedule, 'final_interval')),
-              geolocalizacao: point_presence(schedule, 'final_interval')&.geocoding
+              padrao: time(schedule, 'final_interval') || "",
+              real: point_presence(schedule, 'final_interval')&.created_at&.strftime('%H:%M')|| "",
+              situacao: CurrentState.state(point_presence(schedule, 'final_interval'), time(schedule, 'final_interval'))|| "",
+              longitude: point_presence(schedule, 'final_interval')&.longitude || "",
+              latitude: point_presence(schedule, 'final_interval')&.latitude || "",
+              local_name: point_presence(schedule, 'final_interval')&.local_name || ""
             },
             tempo_final: {
-              padrao: time(schedule, 'final_time'),
-              real: point_presence(schedule, 'final_time')&.created_at&.strftime('%H:%M'),
-              situacao: CurrentState.state(point_presence(schedule, 'final_time'), time(schedule, 'final_time')),
-              geolocalizacao: point_presence(schedule, 'final_time')&.geocoding
+              padrao: time(schedule, 'final_time') || "",
+              real: point_presence(schedule, 'final_time')&.created_at&.strftime('%H:%M')|| "",
+              situacao: CurrentState.state(point_presence(schedule, 'final_time'), time(schedule, 'final_time'))|| "",
+              longitude: point_presence(schedule, 'final_time')&.longitude || "",
+              latitude: point_presence(schedule, 'final_time')&.latitude || "",
+              local_name: point_presence(schedule, 'final_time')&.local_name || ""
             }
           }
         end
@@ -58,11 +68,52 @@ module Manager
       end
 
       def schedules
-        Schedule.joins(role: :company)
-                .where(companies: { id: user.role.company_id })
-                .where('schedules.closing_date >= ?', date)
-                .where('schedules.start_date >= ?', date)
-                .where("schedules.#{date.strftime('%A').downcase} = ?", true)
+        @schedules = Schedule.joins(role: [:user, :company])
+                    .where(companies: { id: user.role.company_id })
+                    .where('schedules.closing_date >= ?', date)
+                    .where('schedules.start_date >= ?', date)
+        s = []
+        @schedules.pluck(:role_id).uniq do |role_id|
+          s << @schedules.joins(:role).where(role: { id: role_id }).first
+        end
+        @schedules = @schedules.where(id: s)
+        @schedules = @schedules.joins(role: :user).where('users.name ILIKE ?', "%#{name}%") unless name.blank?
+        @schedules
+      end
+
+      def total_time(schedule)
+        result = tempo_final(schedule) - tempo_inicial(schedule)
+        result = result - intervalo(schedule) if intervalo(schedule).present?
+        horas = result / 3600
+        minutos = (result % 3600) / 60
+
+        return format('%02d:%02d', horas, minutos)
+      rescue
+        ""
+      end
+
+      def tempo_final(schedule)
+        return point_presence(schedule, 'final_time')&.created_at if point_presence(schedule, 'final_time').present?
+        return Time.zone.now if time(schedule, 'final_time') > Time.zone.now
+        time('final_time')
+      end
+
+      def tempo_inicial(schedule)
+        point_presence(schedule, 'start_time')&.created_at
+      end
+  
+      def intervalo(schedule)
+        return nil if point_presence(schedule, 'initial_interval').blank?
+
+        if point_presence(schedule, 'final_interval').present?
+          return point_presence(schedule, 'final_interval')&.created_at - point_presence(schedule, 'initial_interval')&.created_at
+        end
+
+        if time(schedule, 'final_time') > Time.zone.now
+          return Time.zone.now - point_presence(schedule, 'initial_interval')&.created_at 
+        else
+          return time(schedule, 'final_time') - point_presence(schedule, 'initial_interval')&.created_at 
+        end
       end
     end
   end
