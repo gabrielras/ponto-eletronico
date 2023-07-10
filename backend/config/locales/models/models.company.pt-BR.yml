@@ -1,0 +1,11 @@
+pt-BR:
+  activerecord:
+    models:
+      company:
+        one: empresa
+        other: empresas
+    attributes:
+      company:
+        name: nome
+        created_at: data de criação
+        updated_at: data de atualização

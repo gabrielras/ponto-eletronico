@@ -6,7 +6,7 @@ class Collaborator::CollaboratorController < ApplicationController
   private
 
   def authorization
-    return if current_user.role.collaborator_active?
+    return unless current_user.try(:role).try(:manager?)
     head :unauthorized
   end
 end

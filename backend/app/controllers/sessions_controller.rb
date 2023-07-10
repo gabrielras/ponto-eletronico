@@ -5,7 +5,9 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by_email(params[:email])
     if user && user.authenticate(params[:password])
-      role = user.try(:role).try(:role_type) == 'manager' ? 'manager' : 'colab'
+      role = user.try(:role).try(:role_type)
+      role = 'collaborator_pending' if role.blank?
+
       render json: { token: user.generate_jwt, role: role }, status: :ok 
     else
       render json: { errors: [ { 'error' => 'E-mail ou senha inválidos' } ] }, status: :unauthorized

@@ -9,12 +9,16 @@ module Collaborator
       output :point_presence, type: PointPresence
 
       def call
-        self.point_presence = PointPresence.new(attributes.merge(state: state, role: user.role))
+        self.point_presence = PointPresence.new(attributes.except(:authentication_id).merge(state: state, role: user.role))
+        fail!(error: 'Não é possível executar essa ação') unless user.role.collaborator_active?
 
         validate_weekday
         validate_unique_point_presence
+        validate_authentication_id
 
         point_presence.save!
+      rescue => e
+        fail!(error: "Houve um erro: #{e.message}")
       end
 
       private
@@ -23,6 +27,13 @@ module Collaborator
         return if schedule.send("#{Time.zone.now.strftime('%A').downcase}")
 
         fail!(error: 'Esse dia da semana não está disponível')
+      end
+
+      def validate_authentication_id
+        return if user.authentication_id.blank?
+        if attributes[:authentication_id] != user.authentication_id
+          fail!(error: 'Digital não é compatível')
+        end
       end
 
       def validate_unique_point_presence
@@ -35,11 +46,17 @@ module Collaborator
 
         case last_point_presence.schedule_time
         when 'start_time'
-          attributes["schedule_time"] == 'initial_interval' || attributes["final_time"]
+          unless attributes["schedule_time"] == 'initial_interval' || attributes["final_time"]
+            fail!(error: 'Não é mais possível fazer essa ação.')
+          end
         when 'initial_interval'
-          attributes["schedule_time"] == 'final_interval'
+          unless attributes["schedule_time"] == 'final_interval'
+            fail!(error: 'Não é mais possível fazer essa ação.')
+          end
         when 'final_interval'
-          attributes["schedule_time"] == 'final_time'
+          unless attributes["schedule_time"] == 'final_time'
+            fail!(error: 'Não é mais possível fazer essa ação.')
+          end
         when 'final_time'
           fail!(error: 'Não é mais possível fazer essa ação.')
         end

@@ -7,11 +7,13 @@ module Collaborator
       input :user, type: User
 
       output :data, type: Array
+      output :schedule, type: Schedule, default: nil
 
       def call
         self.data = []
-        return if schedule.blank?
+        self.schedule = Schedule.joins(:role).where(role: { user_id: user.id }).where('schedules.closing_date::date >= ?', date).where('schedules.start_date::date <= ?', date.end_of_day).where('schedules.created_at::date >= ?', date).where("schedules.#{date.strftime('%A').downcase} = ?", true).last
 
+        return if schedule.blank?
         self.data = [
           tempo_total: total_time,
           tempo_inicial: {
@@ -35,6 +37,8 @@ module Collaborator
             situacao: CurrentState.state(point_presence('final_time'), time('final_time')) || "",
           }
         ]
+      rescue => e
+        fail!(error: "Houve um erro: #{e.message}")
       end
 
       private
@@ -47,15 +51,6 @@ module Collaborator
 
       def time(schedule_time)
         "#{schedule.send("#{schedule_time}_hour")}:#{schedule.send("#{schedule_time}_minute")}"
-      end
-
-      def schedule
-        Schedule.joins(:role)
-                .where(role: { user_id: user.id })
-                .where('schedules.closing_date >= ?', date)
-                .where('schedules.start_date >= ?', date)
-                .where("schedules.#{date.strftime('%A').downcase} = ?", true)
-                .first
       end
 
       def total_time

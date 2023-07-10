@@ -21,8 +21,6 @@ class ApplicationController < ActionController::Base
     session[:current_fullpath] = request.fullpath
   end
 
-  private
-
   def authenticate_user!
     if request.headers['Authorization'].present?
       begin

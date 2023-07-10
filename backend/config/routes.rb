@@ -7,7 +7,9 @@ Rails.application.routes.draw do
   namespace :manager do
     resources :dashboards, only: [:index]
     resources :point_presences, only: [:index]
-    resources :users, only: [:index, :create, :update, :destroy]
+    resources :users, only: [:index, :create, :update, :destroy] do
+      post '/reset', to: 'users#reset', on: :member
+    end
 
     get '/info', to: 'user#index'
   end
@@ -15,7 +17,12 @@ Rails.application.routes.draw do
   namespace :collaborator do
     resources :dashboards, only: [:index]
     resources :point_presences, only: [:index, :create]
-    resources :users, only: [:index]
+    resources :users, only: [:index] do
+      collection do
+        post :accept
+        post :reject
+      end
+    end
   end
 
   resources :users, only: [:update]

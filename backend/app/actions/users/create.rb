@@ -9,8 +9,9 @@ module Users
     def call
       self.user = User.new(attributes.except(:role_type, :company_name))
 
-      if attributes["role_type"] == 'manager'
-        Company.create!(name: attributes[:company_name])
+      if attributes["role_type"] == '2'
+        company = Company.create!(name: attributes[:company_name])
+        Role.create!(company: company, user: user, role_type: 'manager')
       end
 
       self.user.save!

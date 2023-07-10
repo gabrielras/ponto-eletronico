@@ -1,0 +1,15 @@
+pt-BR:
+  activerecord:
+    models:
+      user:
+        one: usuário
+        other: usuário
+    attributes:
+      user:
+        name: nome
+        email: email
+        password_digest: senha
+        password: senha
+        authentication_id: identificador
+        created_at: data de criação
+        updated_at: data de atualização

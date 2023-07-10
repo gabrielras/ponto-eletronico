@@ -4,7 +4,7 @@ class Manager::UsersController < Manager::ManagerController
   before_action :set_user, except: [:create, :index]
 
   def index
-    @users = User.joins(:role).where.not(role: { role_type: 'manager' }).where(role: { company_id: current_user.role.company_id, role_type: 'collaborator_active' }).all
+    @users = User.joins(:role).where.not(role: { role_type: 'manager' }).where(role: { company_id: current_user.role.company_id, role_type: ['collaborator_active', 'collaborator_pending'] }).all
     @users = @users.where('name ILIKE ?', "%#{params[:name]}%") if params[:name].present?
     @users = @users.where(id: params[:id]) if params[:id].present?
     render json: users_info(@users)
@@ -32,6 +32,16 @@ class Manager::UsersController < Manager::ManagerController
 
   def destroy
     result = ::Manager::Users::Destroy.result(user: @user)
+
+    if result.success?
+      render json: {}, status: :ok
+    else
+      render json: { errors: result.error }, status: :unprocessable_entity
+    end
+  end
+
+  def reset
+    result = ::Manager::Users::Reset.result(user: @user)
 
     if result.success?
       render json: {}, status: :ok

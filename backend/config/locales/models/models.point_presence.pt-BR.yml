@@ -1,0 +1,17 @@
+pt-BR:
+  activerecord:
+    models:
+      point_presence:
+        one: ponto de presença
+        other: pontos de presença
+    attributes:
+      point_presence:
+        role_id: usuário
+        role: usuário
+        state: situação
+        schedule_time: hora agendada
+        latitude: latitude
+        longitude: longitude
+        local_name: nome do local
+        created_at: data de cadastro
+        updated_at: data de atualização

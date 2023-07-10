@@ -21,7 +21,7 @@ role_manager = Role.create!(user: manager, company: company, role_type: 'manager
     Schedule.create!(
       role: role_collaborator,
       closing_date: Time.zone.now + 5.year,
-      start_date: Time.zone.now,
+      start_date: Time.zone.now - 5.year,
       start_time_hour: 8,
       start_time_minute: 0,
       initial_interval_hour: 12,
@@ -35,6 +35,8 @@ role_manager = Role.create!(user: manager, company: company, role_type: 'manager
       wednesday: true,
       thursday: true,
       friday: true,
+      saturday: true,
+      sunday: true,
     )
 
     point_presence = PointPresence.create!(

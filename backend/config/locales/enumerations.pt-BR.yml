@@ -1,0 +1,12 @@
+pt-BR:
+  enumerations:
+    schedule_times:
+      start_time:
+      initial_interval:
+      final_interval:
+      final_time:
+    role_types:
+      manager: gestor
+      collaborator_active: colaborador ativo
+      collaborator_banned: colaborador banido
+      collaborator_pending: colaborador pendente

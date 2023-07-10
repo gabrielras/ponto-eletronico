@@ -52,6 +52,8 @@ module Manager
             }
           }
         end
+      rescue => e
+        fail!(error: "Houve um erro: #{e.message}")
       end
 
       private
@@ -70,11 +72,13 @@ module Manager
       def schedules
         @schedules = Schedule.joins(role: [:user, :company])
                     .where(companies: { id: user.role.company_id })
-                    .where('schedules.closing_date >= ?', date)
-                    .where('schedules.start_date >= ?', date)
+                    .where('schedules.closing_date::date >= ?', date)
+                    .where('schedules.created_at::date >= ?', date)
+                    .where("schedules.#{date.strftime('%A').downcase} = ?", true)
+                    .where('schedules.start_date::date <= ?', date.end_of_day)
         s = []
         @schedules.pluck(:role_id).uniq do |role_id|
-          s << @schedules.joins(:role).where(role: { id: role_id }).first
+          s << @schedules.joins(:role).where(role: { id: role_id }).last
         end
         @schedules = @schedules.where(id: s)
         @schedules = @schedules.joins(role: :user).where('users.name ILIKE ?', "%#{name}%") unless name.blank?

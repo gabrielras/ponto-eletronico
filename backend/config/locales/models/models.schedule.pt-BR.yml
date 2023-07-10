@@ -1,0 +1,29 @@
+pt-BR:
+  activerecord:
+    models:
+      schedule:
+        one: agendamento
+        other: agendamento
+    attributes:
+      schedule:
+        role: usuário
+        role_id: usuário
+        start_time_hour: hora de início
+        start_time_minute: minuto de início
+        initial_interval_hour: hora do intervalo inicial
+        initial_interval_minute: minuto do intervalo inicial
+        final_interval_hour: hora do intervalo final
+        final_interval_minute: minuto do intervalo final
+        final_time_hour: hora final
+        final_time_minute: minuto final
+        monday: segunda-feira
+        tuesday: terça-feira
+        wednesday: quarta-feira
+        thursday: quinta-feira
+        friday: sexta-feira
+        saturday: sábado
+        sunday: domingo
+        closing_date: data de encerramento
+        start_date: data de início
+        created_at: data de criação
+        updated_at: data de atualização

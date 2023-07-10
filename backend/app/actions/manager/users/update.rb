@@ -16,6 +16,8 @@ module Manager
                                .merge(attributes.except(:email).merge(role: user.role, start_date: Time.zone.now, closing_date: (Time.zone.now + 5.year)))
           )
         end
+      rescue => e
+        fail!(error: "Houve um erro: #{e.message}")
       end
     end
   end

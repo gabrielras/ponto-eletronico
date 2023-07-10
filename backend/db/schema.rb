@@ -70,7 +70,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_125818) do
     t.string "name"
     t.string "email"
     t.string "password_digest"
-    t.jsonb "authentication_id"
+    t.string "authentication_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

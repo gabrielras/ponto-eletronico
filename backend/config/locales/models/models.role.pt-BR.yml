@@ -1,0 +1,15 @@
+pt-BR:
+  activerecord:
+    models:
+      role:
+        one: cargo
+        other: cargos
+    attributes:
+      role:
+        user_id: usuário
+        user: usuário
+        company: empresa
+        company_id: empresa
+        role_type: tipo do cargo
+        created_at: data de cadastro
+        updated_at: data de atualização

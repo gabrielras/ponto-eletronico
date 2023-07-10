@@ -2,12 +2,12 @@
 
 module Manager
   module Users
-    class Destroy < Actor
+    class Reset < Actor
       input :user, type: User
 
       def call
         ActiveRecord::Base.transaction do
-          user.role.update!(role_type: 'collaborator_banned')
+          user.update!(authentication_id: nil)
         end
       rescue => e
         fail!(error: "Houve um erro: #{e.message}")
