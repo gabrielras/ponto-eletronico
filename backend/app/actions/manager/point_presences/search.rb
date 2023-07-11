@@ -74,7 +74,7 @@ module Manager
         @schedules = Schedule.joins(role: [:user, :company])
                     .where(companies: { id: user.role.company_id })
                     .where('schedules.closing_date::date >= ?', date)
-                    .where('schedules.created_at::date >= ?', date)
+                    .where('schedules.created_at::date <= ?', date)
                     .where("schedules.#{date.strftime('%A').downcase} = ?", true)
                     .where('schedules.start_date::date <= ?', date.end_of_day)
         @schedules_uniq = []

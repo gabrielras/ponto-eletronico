@@ -11,7 +11,7 @@ module Collaborator
 
       def call
         self.data = []
-        self.schedule = Schedule.joins(:role).where(role: { user_id: user.id }).where('schedules.closing_date::date >= ?', date).where('schedules.start_date::date <= ?', date.end_of_day).where('schedules.created_at::date >= ?', date).where("schedules.#{date.strftime('%A').downcase} = ?", true).last
+        self.schedule = Schedule.joins(:role).where(role: { user_id: user.id }).where('schedules.closing_date::date >= ?', date).where('schedules.start_date::date <= ?', date.end_of_day).where('schedules.created_at::date <= ?', date).where("schedules.#{date.strftime('%A').downcase} = ?", true).last
 
         return if schedule.blank?
         self.data = [
@@ -20,21 +20,33 @@ module Collaborator
             padrao: time('start_time') || "",
             real: point_presence('start_time')&.created_at&.strftime('%H:%M') || "",
             situacao: CurrentState.state(point_presence('start_time'), time('start_time')) || "",
+            longitude: point_presence('start_time')&.longitude || "",
+            latitude: point_presence('start_time')&.latitude || "",
+            local_name: point_presence('start_time')&.local_name || ""
           },
           intervalo_inicial: {
             padrao: time('initial_interval') || "",
             real: point_presence('initial_interval')&.created_at&.strftime('%H:%M') || "",
             situacao: CurrentState.state(point_presence('initial_interval'), time('initial_interval')) || "",
+            longitude: point_presence('initial_interval')&.longitude || "",
+            latitude: point_presence('initial_interval')&.latitude || "",
+            local_name: point_presence('initial_interval')&.local_name || ""
           },
           intervalo_final: {
             padrao: time('final_interval') || "",
             real: point_presence('final_interval')&.created_at&.strftime('%H:%M') || "",
             situacao: CurrentState.state(point_presence('final_interval'), time('final_interval')) || "",
+            longitude: point_presence('final_interval')&.longitude || "",
+            latitude: point_presence('final_interval')&.latitude || "",
+            local_name: point_presence('final_interval')&.local_name || ""
           },
           tempo_final: {
             padrao: time('final_time') || "",
             real: point_presence('final_time')&.created_at&.strftime('%H:%M') || "",
             situacao: CurrentState.state(point_presence('final_time'), time('final_time')) || "",
+            longitude: point_presence('final_time')&.longitude || "",
+            latitude: point_presence('final_time')&.latitude || "",
+            local_name: point_presence('final_time')&.local_name || ""
           }
         ]
       rescue => e
