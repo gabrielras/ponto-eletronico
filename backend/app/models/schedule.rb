@@ -24,6 +24,19 @@ class Schedule < ApplicationRecord
   validates :sunday, inclusion: { in: [true, false] }
 
   validate :check_interval_attributes_presence
+  validate :check_initial_interval
+
+  def check_initial_interval
+    if initial_interval_hour.zero? && initial_interval_minute.zero?
+      self.initial_interval_hour = nil
+      self.initial_interval_minute = nil
+    end
+
+    if final_interval_hour.zero? && final_interval_minute.zero?
+      self.final_interval_hour = nil
+      self.final_interval_minute = nil
+    end
+  end
 
   def check_interval_attributes_presence
     if initial_interval_hour.present? || initial_interval_minute.present? || final_interval_hour.present? || final_interval_minute.present?

@@ -37,7 +37,7 @@ module Collaborator
       end
 
       def validate_unique_point_presence
-        if PointPresence.where(:created_at => Time.zone.now.beginning_of_day..Time.zone.now.end_of_day).where(role_id: user.role.id, state: state).present?
+        if PointPresence.where(:created_at => Time.zone.now.beginning_of_day..Time.zone.now.end_of_day).where(role_id: user.role.id, schedule_time: attributes[:schedule_time]).present?
           fail!(error: 'Já foi marcado o ponto.')
         end
 
@@ -46,7 +46,7 @@ module Collaborator
 
         case last_point_presence.schedule_time
         when 'start_time'
-          unless attributes["schedule_time"] == 'initial_interval' || attributes["final_time"]
+          unless attributes["schedule_time"] == 'initial_interval' || attributes["schedule_time"] == 'final_time'
             fail!(error: 'Não é mais possível fazer essa ação.')
           end
         when 'initial_interval'

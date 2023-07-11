@@ -11,10 +11,11 @@ module Manager
 
       def call
         self.data = []
+
         return if schedules.blank?
 
         schedules.each do |schedule|
-          next if total_time(schedule).blank?
+          #next if total_time(schedule).blank?
           self.data << {
             user_name: schedule.role.user.name,
             tempo_total: total_time(schedule),
@@ -76,11 +77,11 @@ module Manager
                     .where('schedules.created_at::date >= ?', date)
                     .where("schedules.#{date.strftime('%A').downcase} = ?", true)
                     .where('schedules.start_date::date <= ?', date.end_of_day)
-        s = []
-        @schedules.pluck(:role_id).uniq do |role_id|
-          s << @schedules.joins(:role).where(role: { id: role_id }).last
+        @schedules_uniq = []
+        @schedules.pluck(:role_id).uniq.each do |role_id|
+          @schedules_uniq << @schedules.joins(:role).where(role: { id: role_id }).last
         end
-        @schedules = @schedules.where(id: s)
+        @schedules = @schedules.where(id: @schedules_uniq)
         @schedules = @schedules.joins(role: :user).where('users.name ILIKE ?', "%#{name}%") unless name.blank?
         @schedules
       end

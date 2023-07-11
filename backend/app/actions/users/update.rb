@@ -6,6 +6,7 @@ module Users
     input :user, type: User
 
     def call
+      attributes.delete(:password) if attributes[:password].blank?
       user.update!(attributes)
     rescue => exception
       fail!(error: exception.message)

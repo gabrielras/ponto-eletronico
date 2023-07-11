@@ -27,7 +27,7 @@ module Collaborator
         end
 
         self.data = {
-          banco_de_hora: converter_minutos_para_tempo(banco_de_minutos - total_minutos_trabalhados),
+          banco_de_hora: converter_minutos_para_tempo(total_minutos_trabalhados - banco_de_minutos),
           total_horas_trabalhadas: converter_minutos_para_tempo(total_minutos_trabalhados),
           total_de_faltas: total_de_faltas
         }
